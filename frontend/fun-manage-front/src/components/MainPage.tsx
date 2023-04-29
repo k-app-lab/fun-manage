@@ -33,28 +33,38 @@ const MainPage: FC = () => {
 		{ id: 4, name: "Alice Johnson", visit_count: 1, lastest_visit: "" },
 	];
 
-	const [data, setData] = useState(initData);
+	const [datas, setDatas] = useState(initData);
+	const [displayDatas, setDisplayDatas] = useState(initData);
+	const [searchName, setSearchName] = useState("");
 
 	const addListener = (event: any) => {
 		if (event.keyCode !== 13) return;
 		const name = event.target.value;
 		const newListener: ListenerType = {
-			id: data.length + 1,
+			id: datas.length + 1,
 			name,
 			visit_count: 1,
 			lastest_visit: ""
 		}
-		const temp = [...data]
+		const temp = [...datas]
 		temp.push(newListener)
-		setData(temp)
+		setDatas(temp)
+		setDisplayDatas(temp)
+	}
+
+	const changeSearchName = (event: any) => {
+		const searchName = event.target.value;
+		setSearchName(searchName)
+		setDisplayDatas(datas.filter(el => el.name.includes(searchName)))
 	}
 
 	const addVisitCount = (id: number) => {
-		const temp = [...data]
+		const temp = [...datas]
 		const found = temp.find((el) => el.id === id)
 		if (found == null) return;
 		found.visit_count = found.visit_count + 1
-		setData(temp)
+		setDatas(temp)
+		setDisplayDatas(temp)
 	}
 
 	return (
@@ -63,7 +73,7 @@ const MainPage: FC = () => {
 			<Stack spacing={2} style={{ margin: "0 30px" }}>
 				<Stack direction="row" spacing={2}>
 					<TextField label="新規追加" variant="outlined" onKeyDown={(event) => addListener(event)} />
-					<TextField label="検索" variant="outlined" />
+					<TextField label="検索" variant="outlined" onChange={(event) => changeSearchName(event)} />
 				</Stack>
 				<Table>
 					<TableHead>
@@ -75,7 +85,7 @@ const MainPage: FC = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{data.map((item) => (
+						{displayDatas.map((item) => (
 							<TableRow key={item.id}>
 								<TableCell component="th" scope="row">
 									{item.id}
